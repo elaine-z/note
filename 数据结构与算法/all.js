@@ -1,3 +1,23 @@
+﻿//栈
+function stack() {
+	this.dataStore = [];
+	this.top = 0;
+	this.push = push;
+	this.pop = pop;
+	this.peek = peek;
+}
+
+//队列
+function Queue() {
+	this.dataStore = [];
+	this.enqueue = rnqueue;
+	this.dequeue = dequeue;
+	this.front = front;
+	this.back = back;
+	this.toString = toString;
+	this.empty = empty;
+}
+
 //树
 function Node(data, left, right) {
 	this.data = data;
@@ -348,7 +368,7 @@ function seqSearch(arr, data) {
 	return false;
 }
 
-//二分法查找
+//二分法查找数字
 function binSearch(arr, data) {
 	var upper = arr.length - 1;
 	var lower = 0;
@@ -363,4 +383,43 @@ function binSearch(arr, data) {
 		}
 	}
 	return -1;
+} //如果队列中出现了重复数字，可以写两个for循环来遍历该位置之下或之上的队列，判断是否还存在值相等的数
+
+//寻找最长公共子串，动态规划
+function lcs(word1, word2) {
+	var max = 0;
+	var index = 0;
+	var lcsarr = new Array(word1.length + 1);
+	for (var i = 0; i < word1.length + 1; ++i) {
+		lcsarr[i] = new Array(word2.length + 1);
+		for (var j = 0; j < word2.length + 1; ++j) {
+			lcsarr[i][j] = 0;
+		}
+	}
+	for (var i = 0; i <= word1.length; ++i) {
+		for (var j = 0; j <= word2.length; ++i) {
+			if (i == 0 || j == 0) {
+				lcsarr[i][j] = 0;
+			} else {
+				if (word1[i - 1] == word2[j - 1]) {
+					lcsarr[i][j] = lcsarr[i - 1][j - 1] + 1;
+				} else {
+					lcsarr[i][j] = 0;
+				}
+			}
+			if (max < lcsarr[i][j]) {
+				max = lcsarr[i][j];
+				idex = i;
+			}
+		}
+	}
+	var str = "";
+	if (max == 0) {
+		return "";
+	} else {
+		for (var i = index - max; i <= max; ++i) {
+			str += word2[i];
+		}
+		retrn str;
+	}
 }
