@@ -43,5 +43,5 @@ app.route('/route').get(function(req, res) {
 //使用express.Router类创建模块化、可挂载的路由句柄
 //结合birds.js文件
 var birds = require('./birds');
-app.use('/birds', birds); //访问路径birds/+其他路由的路径
+app.use('/birds', birds); //将路由挂载到应用，访问路径birds/+其他路由的路径
 app.listen(3001); //结果按写入的顺序排列

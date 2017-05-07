@@ -1,0 +1,11 @@
+<h1>
+    文章列表
+</h1>
+<div>
+    {{#each resource}}
+    <p>
+        <a href="/article/{{id}}">{{tittle}}</a></br>
+        Published:{{date}}
+    </p>
+    {{/each}}
+</div>
