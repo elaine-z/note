@@ -1,0 +1,35 @@
+// 给一个公司的员工年龄排序
+function sortAgesMap(list) {
+    let res = []
+    var map = new Map();
+    for(var i = 0; i < list.length; i++) {
+        if (map.has(list[i])) {
+            let value = map.get(list[i])
+            map.set(list[i], value++)
+        } else {
+            map.set(list[i], 1)
+        }
+    }
+    for (var k = 0; k < 99; k++) {
+        if (map.has(k)) {
+            for (var j = 0; j < +map.get(k); j++) {
+                res.push(k)
+            }
+        }
+    }
+    return res
+}
+// 进一步优化时间复杂度为n
+function sortAgesArr(list) {
+    let res = []
+    let maxAge = 99
+    var agesArr = new Array(maxAge + 1).fill(0)
+    for (var i = 1; i < maxAge; i++) {
+        agesArr[list[i]]++
+    }
+    for (var j = 0; j < maxAge + 1; j++) {
+        var list = new Array(agesArr[j]).fill(j)
+        res.concat(list)
+    }
+    return res
+}
