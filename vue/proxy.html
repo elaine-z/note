@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+<div id="app">{{name}}
+    <h2>{{age}}</h2>
+    <input type="text" v-model="name">
+    {{name}}
+    <p>{{sex}}
+        <input type="text" v-model="sex">
+    </p >
+</div>
+<script>
+    // EventTarget [6]
+    class Reactive extends EventTarget {
+        // 接收参数
+        constructor(options) {
+            super();
+            this.options = options;
+            // data 赋值
+            this.$data = this.options.data;
+            // 挂载元素
+            this.el = document.querySelector(this.options.el);
+            // 调用 compile 函数
+            this.compile(this.el);
+            // 调用双向绑定
+            this.observe(this.$data);
+        }
+        // 双向绑定
+        observe(data) {
+            // 备份this
+            let _this = this;
+            // 接收目标对象进行代理
+            this.$data = new Proxy(data, {
+                set(target, prop, value) {
+                    // 创建一个自定义事件 CustomEvent [5]
+                    // 事件名称使用的是 prop
+                    let event = new CustomEvent(prop, {
+                        // 传入新的值
+                        detail: value
+                    })
+                    // 派发 event 事件
+                    _this.dispatchEvent(event);
+                    return Reflect.set(...arguments);
+                }
+            })
+        }
+        // 渲染数据
+        compile(el) {
+            // 获取el的子元素
+            let child = el.childNodes;
+            // 遍历判断是否存在文本
+            [...child].forEach(node => {
+                // 如果node的类型是TEXT_NODE
+                if (node.nodeType === 3) {
+                    // 拿到文本内容
+                    let txt = node.textContent;
+                    // 正则匹配
+                    let reg = /\{\{\s*([^\s\{\}]+)\s*\}\}/g;
+                    if (reg.test(txt)) {
+                        let $1 = RegExp.$1;
+                        this.$data[$1] && (node.textContent = txt.replace(reg, this.$data[$1]))
+                        // 绑定自定义事件
+                        this.addEventListener($1, e => {
+                            // 替换成传进来的 detail
+                            node.textContent = txt.replace(reg, e.detail)
+                        })
+                    }
+                    // 如果node的类型是ELEMENT_NODE
+                } else if (node.nodeType === 1) {
+                    // 获取attr
+                    let attr = node.attributes;
+                    // 判断是否存在v-model属性
+                    if (attr.hasOwnProperty('v-model')) {
+                        // 获取v-model中绑定的值
+                        let keyName = attr['v-model'].nodeValue;
+                        // 赋值给元素的value
+                        node.value = this.$data[keyName]
+                        // 绑定事件
+                        node.addEventListener('input', e => {
+                            // 当事件触发的时候我们进行赋值
+                            this.$data[keyName] = node.value
+                        })
+                    }
+                    // 递归执行
+                    this.compile(node)
+                }
+            })
+        }
+    }
+
+    let vm = new Reactive({
+        // 挂载元素
+        el: "#app",
+        data: {
+            name: "严老湿",
+            age: 24,
+            sex: '男'
+        }
+    });
+</script>
+</body>
+
+</html>
